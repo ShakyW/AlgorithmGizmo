@@ -8,16 +8,28 @@ if random.randint(0, 1):
 else:
     end = ([0, 9][random.randint(0, 1)], random.randint(0, 9))
 
-def nbrs(node):
+directions = {
+    'E' : (0, 1),
+    'W' : (0, -1),
+    'N' : (-1, 0),
+    'S' : (1, 0),
+}
+
+def in_graph(node):
+    return node[0] >= 0 and node[0] < len(graph) and node[1] >= 0 and node[1] < len(graph)
+
+def nbrs(node, dir = 'N'):
     result = []
-    if node[0] > 0 and graph[node[0] - 1][node[1]] == '#':
-        result.append((node[0] - 1, node[1]))
-    if node[0] < len(graph) - 1 and graph[node[0] + 1][node[1]] == '#':
-        result.append((node[0] + 1, node[1]))
-    if node[1] > 0 and graph[node[0]][node[1] - 1] == '#':
-        result.append((node[0], node[1] - 1))
-    if node[1] < len(graph) - 1 and graph[node[0]][node[1] + 1] == '#':
-        result.append((node[0], node[1] + 1))
+    flag = False
+    for d in directions:
+        new_node = (node[0] + directions[d][0], node[1] + directions[d][1])
+        if in_graph(new_node):
+            if d == dir:
+                flag = True
+            else:
+                result.append((d, new_node))
+    if flag == True:
+        result.append((dir, (node[0] + directions[dir][0], node[1] + directions[dir][1])))
     return result
 
 def print_graph():
@@ -30,9 +42,10 @@ graph[start[0]][start[1]] = 'S'
 
 def dfs():
     total = 0
-    stack = [start]
+    stack = [('E', start[0], start[1])]
     while stack:
-        node = stack.pop()
+        temp = stack.pop()
+        dir, node = temp[0], (temp[1], temp[2])
         if node[0] == end[0] and node[1] == end[1]:
             graph[node[0]][node[1]] = 'E'
             print('Congratulations!')
@@ -42,16 +55,18 @@ def dfs():
         if graph[node[0]][node[1]] == '-':
             graph[node[0]][node[1]] = '*'
             total += 1
-        for x, y in nbrs(node):
+        for d, n in nbrs(node, dir):
+            x, y = n
             if graph[x][y] == '#':
                 graph[x][y] = '-'
-                stack.append((x, y))
+                stack.append((d, x, y))
         print_graph()
         input()
 
 def manual():
     total = 0
-    for x, y in nbrs(start):
+    for d, n in nbrs(start):
+        x, y = n
         graph[x][y] = '-'
     while True:
         user_x, user_y = 0, 0
@@ -81,7 +96,8 @@ def manual():
         if graph[node[0]][node[1]] == '-':
             graph[node[0]][node[1]] = '*'
             total += 1
-        for x, y in nbrs(node):
+        for d, n in nbrs(node):
+            x, y = n
             if graph[x][y] == '#':
                 graph[x][y] = '-'
 
