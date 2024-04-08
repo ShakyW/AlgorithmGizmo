@@ -40,28 +40,29 @@ def print_graph():
 start = (len(graph)//2, len(graph)//2)
 graph[start[0]][start[1]] = 'S'
 
-def dfs():
+def dfs(graph, start):
     total = 0
     stack = [('E', start[0], start[1])]
     while stack:
-        temp = stack.pop()
-        dir, node = temp[0], (temp[1], temp[2])
-        if node[0] == end[0] and node[1] == end[1]:
-            graph[node[0]][node[1]] = 'E'
-            print('Congratulations!')
-            print_graph()
-            print('Total nodes searched: ', total)
-            break
-        if graph[node[0]][node[1]] == '-':
-            graph[node[0]][node[1]] = '*'
-            total += 1
-        for d, n in nbrs(node, dir):
-            x, y = n
-            if graph[x][y] == '#':
-                graph[x][y] = '-'
-                stack.append((d, x, y))
-        print_graph()
-        input()
+        graph, stack, flag = dfs_step(graph, stack)
+        if flag:
+            return
+
+def dfs_step(graph, stack):
+    temp = stack.pop()
+    dir, node = temp[0], (temp[1], temp[2])
+    if node[0] == end[0] and node[1] == end[1]:
+        graph[node[0]][node[1]] = 'E'
+        return graph, stack, True
+    if graph[node[0]][node[1]] == '-':
+        graph[node[0]][node[1]] = '*'
+        total += 1
+    for d, n in nbrs(node, dir):
+        x, y = n
+        if graph[x][y] == '#':
+            graph[x][y] = '-'
+            stack.append((d, x, y))
+    return graph, stack, False
 
 def manual():
     total = 0
