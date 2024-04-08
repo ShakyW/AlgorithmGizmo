@@ -1,10 +1,11 @@
 from random import randint
 
-UNSEEN_TILE = 0
-SEEN_TILE = 1
-FRINGE_TILE = 2
-END_TILE = 3
-WIN_TILE = 4
+UNSEEN_TILE = '#'
+SEEN_TILE = '*'
+FRINGE_TILE = '-'
+END_TILE = 'E'
+WIN_TILE = 'W'
+START_TILE = 'S'
 
 # Create board with given width and height and a random end tile
 def init_board(width=10, height=10):
@@ -17,10 +18,10 @@ def init_board(width=10, height=10):
         randCol = randint(0, 9)
         randRow = randint(0, 9)
 
-    newBoard[randRow][randCol] = END_TILE
-    newBoard[startPos[1]][startPos[0]] = SEEN_TILE
+    # newBoard[randRow][randCol] = END_TILE
+    newBoard[startPos[1]][startPos[0]] = START_TILE
 
-    return (newBoard, rowColToIdx(startPos[1], startPos[0], width))
+    return (newBoard, rowColToIdx(startPos[1], startPos[0], width), rowColToIdx(randRow, randCol, width))
 
 # Return row-major-order index of item at given row and column
 def rowColToIdx(row: int, col: int, width: int):
@@ -42,7 +43,7 @@ def getNeighbors(idx: int, width: int, height: int):
 
 
 # Does a single step of bfs, updates the fringe and returns if at end (0 if not, 1 if so)
-def bfsStep(board: list[list[int]], fringe: set[int], width: int, height: int):
+def bfsStep(board: list[list[int]], fringe: set[int], endPos: int, width: int, height: int):
     nextIdx = fringe.pop(0)
     nextRow, nextCol = idxToRowCol(nextIdx, width)
     board[nextRow][nextCol] = SEEN_TILE
@@ -51,18 +52,23 @@ def bfsStep(board: list[list[int]], fringe: set[int], width: int, height: int):
         nodeRow, nodeCol = idxToRowCol(node, width)
         if board[nodeRow][nodeCol] == UNSEEN_TILE: # New neighbor, add to fringe
             board[nodeRow][nodeCol] = FRINGE_TILE
+            if (node == endPos): board[nodeRow][nodeCol] = END_TILE
             fringe.append(node)
-        elif board[nodeRow][nodeCol] == END_TILE:   # Yay we win
+        elif node == endPos:   # Yay we win
             board[nodeRow][nodeCol] = WIN_TILE 
             return 1
     
     return 0    # Did not find goal this step so return 0
 
-def doBFS(board: list[list[int]], startPos:int, width:int=10, height:int=10):
-    fringe = [startPos]
+def doBFS(board: list[list[int]], startPos:int, endPos:int, width:int=10, height:int=10):
+    fringe = [*getNeighbors(startPos, width, height)]
     isDone = 0
+    printBoard(board)
+    print()
+    input()
+
     while(not isDone): # Until we are finished loop through the BFS
-        isDone = bfsStep(board, fringe, width, height)
+        isDone = bfsStep(board, fringe, endPos, width, height)
         printBoard(board)
         print() # Extra line for spacing
         input()
@@ -78,8 +84,8 @@ def printBoard(board: list[int]):
 def main():
     width = 11
     height = 10
-    board, startPos = init_board(width, height)
-    doBFS(board, startPos, width, height)
+    board, startPos, endPos = init_board(width, height)
+    doBFS(board, startPos, endPos, width, height)
 
 if __name__ == "__main__":
     main()
