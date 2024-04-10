@@ -69,6 +69,52 @@ def dfs_step(graph, stack):
             stack.append((d, x, y))
     return graph, stack, False
 
+def manual_step(graph, total):
+    while True:
+        user_input = input('Where to search next? (Enter two integers with a space in between)').split(' ')
+        try :
+            user_x, user_y = int(user_input[0]), int(user_input[1])
+        except:
+            print("Input not understood.")
+            continue
+        if user_x >= 0 and user_x < len(graph) and user_y >= 0 and user_y < len(graph[0]):
+            char = graph[user_x][user_y]
+            if char == '-':
+                break
+            elif char == '#':
+                print('Invalid place to search!')
+            elif char == '*' or char == 'S':
+                print('You have already searched this place.')
+        else:
+            print('This place is not on the graph.')
+
+    node = (user_x, user_y)
+
+    if node[0] == end[0] and node[1] == end[1]:
+        graph[node[0]][node[1]] = 'E'
+        print('Congratulations!')
+        print_graph_graph_supplied(graph)
+        print('Total nodes searched: ', total)
+        return (total, 1)
+    if graph[node[0]][node[1]] == '-':
+        graph[node[0]][node[1]] = '*'
+        total += 1
+    for d, n in nbrs(node):
+        x, y = n
+        if graph[x][y] == '#':
+            graph[x][y] = '-'
+    return (total, 0)
+
+def manual_graph_supplied(graph):
+    total = 0
+    for d, n in nbrs(start):
+        x, y = n
+        graph[x][y] = '-'
+    while True:
+        total, flag = manual_step(graph, total)
+        if flag:
+            break        
+            
 def manual():
     total = 0
     for d, n in nbrs(start):
