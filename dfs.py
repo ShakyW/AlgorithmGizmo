@@ -37,6 +37,11 @@ def print_graph():
     for i in range(len(graph)):
         print(i, ' '.join(graph[i]))
 
+def print_graph_graph_supplied(graph):
+    print(' ', ' '.join([str(i) for i in range(len(graph))]))
+    for i in range(len(graph)):
+        print(i, ' '.join(graph[i]))
+
 start = (len(graph)//2, len(graph)//2)
 graph[start[0]][start[1]] = 'S'
 
@@ -102,14 +107,19 @@ def manual():
             if graph[x][y] == '#':
                 graph[x][y] = '-'
 
-print_graph()
-while True:
-    choice = input('What would you like to do? (type \'dfs\' for computer search, \'manual\' to manually search)')
-    if choice == 'dfs':
-        dfs()
-        break
-    elif choice == 'manual':
-        manual()
-    else:
-        print('Invalid Choice!')
 
+def main():
+    print_graph()
+    while True:
+        choice = input('What would you like to do? (type \'dfs\' for computer search, \'manual\' to manually search)')
+        if choice == 'dfs':
+            dfs()
+            break
+        elif choice == 'manual':
+            manual()
+        else:
+            print('Invalid Choice!')
+
+
+if __name__ == "__main__":
+    main()
