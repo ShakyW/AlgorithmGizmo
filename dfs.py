@@ -61,7 +61,7 @@ def dfs_step(graph, stack):
         return graph, stack, True
     if graph[node[0]][node[1]] == '-':
         graph[node[0]][node[1]] = '*'
-        total += 1
+        # total += 1
     for d, n in nbrs(node, dir):
         x, y = n
         if graph[x][y] == '#':
