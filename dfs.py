@@ -41,7 +41,6 @@ start = (len(graph)//2, len(graph)//2)
 graph[start[0]][start[1]] = 'S'
 
 def dfs(graph, start):
-    total = 0
     stack = [('E', start[0], start[1])]
     while stack:
         graph, stack, flag = dfs_step(graph, stack)
