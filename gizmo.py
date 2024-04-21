@@ -2,6 +2,9 @@ import random
 from tkinter import *
 from tkinter import messagebox 
 
+window = Tk()
+window.resizable(0,0)
+
 graph = []
 start, end = (0, 0), (0, 0)
 directions = {}
@@ -9,11 +12,23 @@ buttons = []
 total, state = 0, 0
 stack, queue = [], []
 nothing = 0
+situation = StringVar(window)
+situation.set("search_party") # Initial value is search party
 
 size = 10
 
+def getNewEnd(situation):
+    if (situation.get() == "find_exit"): # Put end on edge
+        if random.randint(0, 1):
+            return (random.randint(0, size - 1), [0, size - 1][random.randint(0,1)])
+        else:
+            return ([0, size - 1][random.randint(0, 1)], random.randint(0, size - 1))
+    else: # Put end closer to start
+        width, height = len(graph)//2, len(graph)//2
+        return (random.randint(width-size//4, width+size//4), random.randint(height-size//4, height+size//4))
+
 def initialize():
-    global graph, start, end, directions, buttons, stack, queue, total, state, nothing, size
+    global graph, start, end, directions, buttons, stack, queue, total, state, nothing, size, situation
     graph = []
     start, end = (0, 0), (0, 0)
     directions = {}
@@ -23,11 +38,7 @@ def initialize():
     nothing = 0
     graph = [['#' for i in range(size)] for j in range(size)]
 
-    end = (0, 0)
-    if random.randint(0, 1):
-        end = (random.randint(0, size - 1), [0, size - 1][random.randint(0,1)])
-    else:
-        end = ([0, size - 1][random.randint(0, 1)], random.randint(0, size - 1))
+    end = getNewEnd(situation)
 
     directions = {
         'E' : (0, 1),
@@ -71,6 +82,23 @@ def initialize():
                         text = 'Reset',
                         command = lambda r = i, c = j : initialize())
     buttons[size - 1][size + 1].grid(row = size - 1, column = size + 1)
+
+    # Add situations buttons to visualization
+    buttons[2][size] = Radiobutton(
+                    height = 1, width = 10,
+                    font = ("Helvetica","10"),
+                    text = ' Search Party ', variable=situation, value="search_party",
+                    indicatoron=False,
+                    command = lambda: initialize())
+    buttons[2][size].grid(row = 2, column = size)
+
+    buttons[2][size+1] = Radiobutton(
+                    height = 1, width = 10,
+                    font = ("Helvetica","10"),
+                    text = ' Find Exit ', variable=situation, value="find_exit",
+                    indicatoron=False,
+                    command = lambda: initialize())
+    buttons[2][size+1].grid(row = 2, column = size+1)
 
 def nbrs(node, dir = 'N'):
     result = []
@@ -231,9 +259,6 @@ def finish():
     global state
     state = 1
     messagebox.showinfo('Congratulations!', 'Total nodes searched: ' + str(total))
-
-window = Tk()
-window.resizable(0,0)
 
 initialize()
 
